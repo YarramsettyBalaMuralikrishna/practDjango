@@ -1,0 +1,20 @@
+virtualEnv -> pract
+1. cd djangoProjects
+django-admin startproject <projectName>  -> project creation
+virtualEnv through vscode -> workon <envName>
+app creation -> python manage.py 
+starting app -> python manage.py startapp <appName>
+
+
+setting.py include app which are created.
+        INSTALLED_APPS = [
+            ...,
+            <appName>,] # is it mandatory or not check when more apps are present and justify
+
+-------------------------------------------------------------------------
+framework vs library
+MVC
+Django -> MVT model view template
+advantages of django over other components
+ORM
+use of app in django project
