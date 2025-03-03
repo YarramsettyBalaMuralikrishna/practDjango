@@ -1,0 +1,14 @@
+
+
+-------------------------------------------------------------------------
+framework vs library
+MVC
+Django -> MVT model view template
+advantages of django over other components
+ORM
+use of app in django project
+DTL -> django template language (explore abt them just like using servlet in spring boot)
+what is jinger pattern/ template in jsp and django template where are they used in code
+Read abt all http methods -> get, post, put, delete, patch, ... any if present
+theory - major attacks to websites
+async views in django

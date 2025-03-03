@@ -2,7 +2,7 @@ virtualEnv -> pract
 1. cd djangoProjects
 django-admin startproject <projectName>  -> project creation
 virtualEnv through vscode -> workon <envName>
-app creation -> python manage.py 
+app creation -> python manage.py <appName>
 starting app -> python manage.py startapp <appName>
 
 
@@ -10,11 +10,23 @@ setting.py include app which are created.
         INSTALLED_APPS = [
             ...,
             <appName>,] # is it mandatory or not check when more apps are present and justify
+from django.views.decorators.csrf import csrf_exempt
 
--------------------------------------------------------------------------
-framework vs library
-MVC
-Django -> MVT model view template
-advantages of django over other components
-ORM
-use of app in django project
+@csrf_exempt 
+https://www.django-rest-framework.org/api-guide/views/#api_view  refer for django rest api
+
+
+------------------- receving data from url
+print(request.body)
+if we get data in this formt b'{"name":"bala","password":"asdasf"}'  we are receving the data
+in an encoded format we should decode that before encoding it
+
+from django.http import HttpResponse, JsonResponse
+import json
+
+---- we can do by this
+data = json.loads(request.body.decode('utf-8'))
+    name, password = data.get('name'), data.get('password')
+    print(name, password)
+
+
