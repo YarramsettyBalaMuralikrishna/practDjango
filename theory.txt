@@ -12,3 +12,4 @@ what is jinger pattern/ template in jsp and django template where are they used 
 Read abt all http methods -> get, post, put, delete, patch, ... any if present
 theory - major attacks to websites
 async views in django
+Function views vs class based views

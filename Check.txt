@@ -1,4 +1,4 @@
-virtualEnv -> pract
+virtualEnv -> python -m venv pract - coorect if any errors exists
 1. cd djangoProjects
 django-admin startproject <projectName>  -> project creation
 virtualEnv through vscode -> workon <envName>
