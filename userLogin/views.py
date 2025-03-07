@@ -13,29 +13,24 @@ from django.shortcuts import get_object_or_404
 @csrf_exempt
 @api_view(['POST'])
 def login(request):
-    print(request.body)
-    data = json.loads(request.body.decode('utf-8'))
-    name, password = data.get('name'), data.get('password')
-    # print(name, password)
-    # testName,testWord = "YBMK","bala123"
-    # if testName == name and testWord == password:
-    #     return HttpResponse("Login Successful", status = 200)
-    # else:
-    #     return HttpResponse("Bad Credentials", status = 404)
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        email, password = data.get('email'), data.get('password')
+        try:
+            user = User.objects.get(email = email, password = password)
+            serializer = userSerializer(user) 
+            response = Response(serializer.data, status=200) # return user data
 
-    allUsers = User.objects.all()
-    # print(allUsers)
-    serializer = userSerializer(allUsers, many = True)
-    # print(serializer.data)
-    allData = serializer.data
-    for data in allData:
-        print(data['userName'])
-        if data['userName'] == name and data['password'] == password:
-            return Response(f" Hello {name}")
-    else:
-        return Response(" Bhoom Bad credentials")
+            # Sending cookie to user
+            response.set_cookie('user_logged_in', user.email, max_age=3600, httponly=True)
 
-    # return Response(" bhoom")
+            return response
+        except User.DoesNotExist:
+            return Response("Invalid Credentials", status=404)
+
+    except Exception as e:
+        return Response(f"Error : {e}", status=404)
+
 
 def validateUserData(*args, **kwargs):
     print(args)
@@ -82,28 +77,52 @@ def signUp(request):
 
 @api_view(['PUT'])
 def update(request):
-    recievedData = json.loads(request.body.decode('utf-8'))
-    print(recievedData)
-    allUserData = User.objects.all()
-    serializer = userSerializer(allUserData, many = True)
-    userData = serializer.data
-    for data in userData:
-        if data['email'] == recievedData['email']:
-            # return Response("updated successfully")
-            # tempData = data
-            # tempData['name'] = recievedData['name']
-            # tempData['mobile'] = recievedData['mobile']
-            # print(tempData)
-            newUser = User(
-                userName = recievedData['name'],
-            password = recievedData['password'],
-            mobile = recievedData['mobile'],
-            email = recievedData['email']
-            )
-            newUser.save()
-            return Response("updated successfully", status=200)
-    else:
-        return Response("BHoom", status=404)
-    # try:
-    #     prod = get_object_or_404(allUserData, )
+    try:
+        # print("1")
+        user_email = request.COOKIES.get('user_logged_in') # getting cookie
+        # print("2")
+        if not user_email:
+            return Response({"detail": "Authentication required"}, status = 401)
+        # print("3")
+        recievedData = json.loads(request.body.decode('utf-8'))
+        # print(recievedData, " reciedev data")
+        # print("4")
 
+        try:
+            currentUser = User.objects.get(email = recievedData['email']) # get the user
+            # print("5")
+        except User.DoesNotExist:
+            # print("6")
+            return Response({"detail": "User not found"}, status=404)
+        # print(currentUser)
+        # print(user_email)
+        # print("7")
+        if currentUser.email != user_email:
+            # print("8")
+            return Response({"detail": "Unauthorized"}, status=403) #check if the user is authorized.
+        # print("9")
+        try:
+            currentUser.userName = recievedData.get('name', currentUser.userName) #update the user data.
+            currentUser.password = recievedData.get('password', currentUser.password)
+            currentUser.mobile = recievedData.get('mobile', currentUser.mobile)
+            # print("10")
+            currentUser.save()
+        except Exception as e:
+            # print("11")
+            return Response(f"error in saving details {e}", status=404)
+            
+        # print("11")
+        return Response("updated successfully", status=200)
+
+    except json.JSONDecodeError:
+        # print("12")
+        return Response({"detail": "Invalid JSON"}, status=400)
+    except Exception as e:
+        # print("513")
+        return Response(f"An error occurred: {e}", status=500)
+        
+@api_view(['POST'])
+def signOut(request):
+    response = Response({"Signed Out successfully"}, status=200)
+    response.delete_cookie('user_logged_in')
+    return response
